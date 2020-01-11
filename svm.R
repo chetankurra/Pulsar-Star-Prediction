@@ -1,0 +1,22 @@
+pulsarstar=read.csv("A:/sem7/ml/ml project/pulsar_stars.csv")
+summary(pulsarstar)
+View(pulsarstar)
+str(pulsarstar)
+pulsarstar=pulsarstar[-9]
+library(e1071)
+pulsarstar_data=sample(2,nrow(pulsarstar),replace=TRUE,prob=c(0.7,0.3))
+columns=c("Mean.of.the.integrated.profile","Mean.of.the.DM.SNR.curve","target_class")
+pulsarstar_train=pulsarstar[pulsarstar_data==1,columns]
+pulsarstar_test=pulsarstar[pulsarstar_data==2,columns]
+pulsarstar_test_labels=pulsarstar_test$target_class
+View(pulsarstar_test)
+pulsarstar_test=pulsarstar_test[-3]
+svmfit=svm(target_class~.,data=pulsarstar_train,kernel="linear",cost=.1,scale=FALSE)
+print(svmfit)
+plot(svmfit,pulsarstar_train[,columns])
+p=predict(svmfit,pulsarstar_test,type="class")
+table(pulsarstar_test_labels,p)
+library(rminer)
+mmetric(p,pulsarstar_test_labels,c("ACC","PRECISION","F1","TPR"))
+library(caret)
+confusionMatrix(p,pulsarstar_test_labels)
